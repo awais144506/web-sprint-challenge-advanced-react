@@ -78,7 +78,6 @@ export default function AppFunctional(props) {
   function onChange(evt) {
     // You will need this to update the value of the input.
     const { value } = evt.target
-
     setEmail(value)
   }
 

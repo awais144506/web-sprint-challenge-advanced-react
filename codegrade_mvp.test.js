@@ -1,8 +1,6 @@
 import server from './backend/mock-server'
 import React from 'react'
 import AppFunctional from './frontend/components/AppFunctional'
-// ❗ class component is optional, uncomment next line to test
-// import AppClass from './frontend/components/AppClass'
 import { render, fireEvent, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 
