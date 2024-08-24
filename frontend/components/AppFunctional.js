@@ -1,19 +1,19 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 // Suggested initial states
 const initialMessage = ''
 const initialEmail = ''
 const initialSteps = 0
 const initialIndex = 4 // the index the "B" is at
-
+const URL = "http://localhost:9000/api/result"
 
 export default function AppFunctional(props) {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
-  const [email,setEmail] = useState(initialEmail)
-  const [steps,setSteps] = useState(initialSteps)
-  const [message,setMessage] = useState(initialMessage)
-  const [index,setIndex] = useState(initialIndex)
+  const [email, setEmail] = useState(initialEmail)
+  const [steps, setSteps] = useState(initialSteps)
+  const [message, setMessage] = useState(initialMessage)
+  const [index, setIndex] = useState(initialIndex)
   function getXY() {
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
@@ -29,9 +29,8 @@ export default function AppFunctional(props) {
     const { x, y } = getXY();
     return `Coordinates (${x}, ${y})`;
   }
-  function stepsCount ()
-  {
-    setSteps(steps+1)
+  function stepsCount() {
+    setSteps(steps + 1)
   }
 
   function reset() {
@@ -48,36 +47,54 @@ export default function AppFunctional(props) {
     if (direction === 'left' && index % 3 !== 0) {
       return index - 1;
     }
+    else if (direction === "right" && index % 3 !== 2) {
+      return index + 1
+    }
+    else if (direction === "up" && index > 2) {
+      return index - 3
+    }
+    else if (direction === "down" && index < 6) {
+      return index + 3
+    }
     return index;
   }
 
   function move(evt) {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
-   const direction = evt.target.id
-   const nextIndex = getNextIndex(direction)
-   if(nextIndex!==index)
-   {
-    setIndex(nextIndex)
-    stepsCount()
-    setMessage("")
-   }
-   else
-   {
-    setMessage(`You can't go ${direction}`)
-   }
+    const direction = evt.target.id
+    const nextIndex = getNextIndex(direction)
+    if (nextIndex !== index) {
+      setIndex(nextIndex)
+      stepsCount()
+      setMessage("")
+    }
+    else {
+      setMessage(`You can't go ${direction}`)
+    }
   }
 
   function onChange(evt) {
     // You will need this to update the value of the input.
-    const {value} = evt.target
-   
+    const { value } = evt.target
+
     setEmail(value)
   }
 
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
     evt.preventDefault()
+    const {x,y} = getXY()
+    const payload = {x,y,steps,email}
+
+    axios.post(URL,payload)
+    .then(res=>{
+      setMessage(res.data.message)
+      setEmail(initialEmail)
+    })
+    .catch(err=>{
+      setMessage(err.response.data.message)
+    })
 
   }
 
